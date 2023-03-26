@@ -43,8 +43,6 @@ namespace servicio_social_api.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         json = await response.Content.ReadAsStringAsync();
-                        IpApiCoResponse ipApiCoResponse = JsonConvert.DeserializeObject<IpApiCoResponse>(json)!;
-                        countryCode = ipApiCoResponse.CountryCode!;
                     }
                 }
             }
