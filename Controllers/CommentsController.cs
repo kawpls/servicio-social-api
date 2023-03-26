@@ -28,6 +28,7 @@ namespace servicio_social_api.Controllers
             string os = clientInfo.OS.Family;
             string referrer = Request.Headers["Referer"];
             string ipAddress = Request.HttpContext.Connection.RemoteIpAddress!.ToString();
+            _logger.LogInformation(ipAddress);
             string countryCode = await GetCountryCodeFromIp(ipAddress);
             return Ok(countryCode);
         }
