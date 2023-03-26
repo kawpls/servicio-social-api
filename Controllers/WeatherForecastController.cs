@@ -7,7 +7,7 @@ using UAParser;
 namespace servicio_social_api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("")]
     public class CommentsController : ControllerBase
     {
 
@@ -18,8 +18,8 @@ namespace servicio_social_api.Controllers
             _logger = logger;
         }
 
-        [HttpPost(Name = "PostComment")]
-        public async Task<IActionResult> PostComment()
+        [HttpGet]        
+        public async Task<IActionResult> Post()
         {
             string userAgent = Request.Headers["User-Agent"];
             var uaParser = Parser.GetDefault();
