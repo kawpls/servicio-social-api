@@ -51,7 +51,7 @@ namespace servicio_social_api.Controllers
             {
                 _logger.LogError(e.Message);
             }
-            return json;
+            return ipAddress;
         }
 
         private class IpApiCoResponse
