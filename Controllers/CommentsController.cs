@@ -7,7 +7,7 @@ using UAParser;
 namespace servicio_social_api.Controllers
 {
     [ApiController]
-    [Route("")]
+    [Route("api/")]
     public class CommentsController : ControllerBase
     {
 
@@ -18,7 +18,7 @@ namespace servicio_social_api.Controllers
             _logger = logger;
         }
 
-        [HttpGet]        
+        [HttpGet("GetComments")]        
         public async Task<IActionResult> Post()
         {
             string userAgent = Request.Headers["User-Agent"];
@@ -34,6 +34,7 @@ namespace servicio_social_api.Controllers
         private async Task<string> GetCountryCodeFromIp(string ipAddress)
         {
             string countryCode = "";
+            string json = "";
             try
             {
                 using (var client = new HttpClient())
@@ -41,7 +42,7 @@ namespace servicio_social_api.Controllers
                     var response = await client.GetAsync("https://ipapi.co/" + ipAddress + "/json/");
                     if (response.IsSuccessStatusCode)
                     {
-                        var json = await response.Content.ReadAsStringAsync();
+                        json = await response.Content.ReadAsStringAsync();
                         IpApiCoResponse ipApiCoResponse = JsonConvert.DeserializeObject<IpApiCoResponse>(json)!;
                         countryCode = ipApiCoResponse.CountryCode!;
                     }
@@ -51,7 +52,7 @@ namespace servicio_social_api.Controllers
             {
                 _logger.LogError(e.Message);
             }
-            return countryCode;
+            return json;
         }
 
         private class IpApiCoResponse
