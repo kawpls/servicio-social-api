@@ -38,8 +38,8 @@ namespace servicio_social_api.Controllers
             try
             {
                 using (var client = new HttpClient())
-                {
-                    var response = await client.GetAsync("https://ipapi.co/" + ipAddress + "/json/");
+                {                
+                    var response = await client.GetAsync($"https://api.getgeoapi.com/v2/ip/{ipAddress}?api_key=fdb403207483270333f128fc95778550fddae208&format=json");
                     if (response.IsSuccessStatusCode)
                     {
                         json = await response.Content.ReadAsStringAsync();
