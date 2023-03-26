@@ -1,39 +1,60 @@
 name: Trigger auto deployment for ss-api
+
+# When this action will be executed
 on:
+  # Automatically trigger it when detected changes in repo
   push:
     branches: 
       [ master ]
+    paths:
+    - '**'
+    - '.github/workflows/ss-api-AutoDeployTrigger-c5f16987-d99c-4775-8fdb-c21c9756d3b0.yml'
+
+  # Allow mannually trigger 
+  workflow_dispatch:      
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2.7.0
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2.5.0
+        uses: docker/setup-buildx-action@v1
+
       - name: Log in to container registry
-        uses: docker/login-action@v2.1.0
+        uses: docker/login-action@v1
         with:
           registry: docker.io
           username: ${{ secrets.SSAPI_REGISTRY_USERNAME }}
           password: ${{ secrets.SSAPI_REGISTRY_PASSWORD }}
+
       - name: Build and push container image to registry
-        uses: docker/build-push-action@v4.0.0
+        uses: docker/build-push-action@v2
         with:
           push: true
-          tags: kaaw/ss-api:latest
+          tags: kaaw/ss-api:${{ github.sha }}
+          file: ./Dockerfile
+          context: ./
+
+
   deploy:
     runs-on: ubuntu-latest
-    needs: build    
+    needs: build
+
     steps:
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.SSAPI_AZURE_CREDENTIALS }}
+
+
       - name: Deploy to containerapp
         uses: azure/CLI@v1
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
             az containerapp registry set -n ss-api -g DefaultResourceGroup-CUS --server docker.io --username  ${{ secrets.SSAPI_REGISTRY_USERNAME }} --password ${{ secrets.SSAPI_REGISTRY_PASSWORD }}
-            az containerapp update -n ss-api -g DefaultResourceGroup-CUS --image kaaw/ss-api:latest
+            az containerapp update -n ss-api -g DefaultResourceGroup-CUS --image kaaw/ss-api:${{ github.sha }}
